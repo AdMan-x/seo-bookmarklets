@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEO Bookmarklets</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 3rem 1.5rem; min-height: 100vh;
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0b0f12; color: #e7ecef;
+  }
+  main { max-width: 46rem; margin: 0 auto; }
+  h1 { font-size: 1.9rem; margin: 0 0 .4rem; letter-spacing: -.02em; }
+  .lead { color: #9aa7b1; margin: 0 0 2.5rem; }
+  article {
+    border: 1px solid #1e262d; border-radius: 10px;
+    padding: 1.1rem 1.25rem; margin-bottom: .9rem; background: #10161b;
+  }
+  article p { margin: .6rem 0 0; color: #9aa7b1; font-size: .92rem; }
+  .bookmarklet {
+    display: inline-block; padding: .5rem 1rem;
+    background: #10b981; color: #06231a; font-weight: 600;
+    border-radius: 6px; text-decoration: none; font-size: .95rem;
+    cursor: grab;
+  }
+  .bookmarklet:active { cursor: grabbing; }
+  h2 { font-size: 1rem; margin: 2.5rem 0 .5rem; color: #cfd8de; }
+  code { background: #10161b; border: 1px solid #1e262d; border-radius: 4px;
+         padding: .1rem .35rem; font-size: .86rem; }
+  footer { margin-top: 2.5rem; color: #6f7d87; font-size: .85rem; }
+  a { color: #10b981; }
+</style>
+</head>
+<body>
+<main>
+  <h1>SEO Bookmarklets</h1>
+  <p class="lead">Trois bookmarklets pour récupérer rapidement les données d'une SERP.
+  Glissez un bouton dans votre barre de favoris, puis cliquez dessus depuis une page.</p>
+
+  <article>
+    <a class="bookmarklet" href='javascript:alert("Glissez ce bouton dans votre barre de favoris, ne le cliquez pas ici.")'>Exemple : ceci est un bouton à glisser</a>
+    <p>Un clic sur cette page ne fait rien : il faut d'abord glisser le bouton dans la barre de favoris.</p>
+  </article>
+
+  <h2>Les bookmarklets</h2>
+  <article>
+    <a class="bookmarklet" href='javascript:(function () { var titles = Array.from(document.querySelectorAll(&quot;h3&quot;)) .map(function (el) { return el.innerText.trim(); }) .filter(function (text) { return text.length &gt; 0; }); if (!titles.length) { alert(&quot;Aucun titre trouvé sur cette page.&quot;); return; } copy(titles.join(&quot;\n&quot;)); alert(titles.length + &quot; titres copiés !&quot;); function copy(text) { if (navigator.clipboard &amp;&amp; navigator.clipboard.writeText) { navigator.clipboard.writeText(text).catch(function () { legacy(text); }); return; } legacy(text); } function legacy(text) { var area = document.createElement(&quot;textarea&quot;); area.value = text; area.style.position = &quot;fixed&quot;; area.style.opacity = &quot;0&quot;; document.body.appendChild(area); area.select(); document.execCommand(&quot;copy&quot;); document.body.removeChild(area); } })();'>Get All Titles</a>
+    <p>Copie les titres (h3) de la page, un par ligne.</p>
+  </article>
+  <article>
+    <a class="bookmarklet" href='javascript:(function () { var nodes = Array.from(document.querySelectorAll(&quot;a[data-ved]&quot;)); if (!nodes.length) { nodes = Array.from( document.querySelectorAll(&quot;#search a[href], #b_results a[href], a.result__a&quot;) ); } var urls = nodes .map(function (el) { return realUrl(el.href); }) .filter(function (url) { if (!url) { return false; } try { var u = new URL(url); if (u.protocol !== &quot;http:&quot; &amp;&amp; u.protocol !== &quot;https:&quot;) { return false; } if (u.hostname.indexOf(&quot;google.&quot;) !== -1) { return false; } if (url.indexOf(&quot;aclk&quot;) !== -1) { return false; } return true; } catch (e) { return false; } }); var unique = Array.from(new Set(urls)); if (!unique.length) { alert(&quot;Aucun lien trouvé. Essaie de faire défiler un peu !&quot;); return; } copy(unique.join(&quot;\n&quot;)); alert(unique.length + &quot; URLs copiées !&quot;); function realUrl(href) { try { var u = new URL(href, location.href); if (u.pathname === &quot;/url&quot;) { var target = u.searchParams.get(&quot;q&quot;) || u.searchParams.get(&quot;url&quot;) || u.searchParams.get(&quot;u&quot;); if (target &amp;&amp; /^https?:\/\//i.test(target)) { return target; } } return u.href; } catch (e) { return null; } } function copy(text) { if (navigator.clipboard &amp;&amp; navigator.clipboard.writeText) { navigator.clipboard.writeText(text).catch(function () { legacy(text); }); return; } legacy(text); } function legacy(text) { var area = document.createElement(&quot;textarea&quot;); area.value = text; area.style.position = &quot;fixed&quot;; area.style.opacity = &quot;0&quot;; document.body.appendChild(area); area.select(); document.execCommand(&quot;copy&quot;); document.body.removeChild(area); } })();'>All URL</a>
+    <p>Copie les URL des résultats, une par ligne.</p>
+  </article>
+  <article>
+    <a class="bookmarklet" href='javascript:(function () { var title = document.title.trim(); if (!title) { alert(&quot;Aucun title sur cette page.&quot;); return; } copy(title); alert(&quot;Title copié :\n\n&quot; + title); function copy(text) { if (navigator.clipboard &amp;&amp; navigator.clipboard.writeText) { navigator.clipboard.writeText(text).catch(function () { legacy(text); }); return; } legacy(text); } function legacy(text) { var area = document.createElement(&quot;textarea&quot;); area.value = text; area.style.position = &quot;fixed&quot;; area.style.opacity = &quot;0&quot;; document.body.appendChild(area); area.select(); document.execCommand(&quot;copy&quot;); document.body.removeChild(area); } })();'>Title</a>
+    <p>Copie le title de la page.</p>
+  </article>
+
+  <h2>Installation</h2>
+  <p>1. Affichez la barre de favoris : <code>Ctrl+Maj+B</code> (Windows, Linux) ou <code>Cmd+Maj+B</code> (macOS).<br>
+     2. Glissez le bouton voulu dans la barre.<br>
+     3. Ouvrez une page de résultats, cliquez sur le favori, le contenu est copié.</p>
+
+  <h2>Limites</h2>
+  <p><strong>Get All Titles</strong> ramasse tous les <code>h3</code> : sur Google, cela inclut
+  les annonces et le bloc de recherches associées.<br>
+  <strong>All URL</strong> est optimisé pour Google, avec un repli pour Bing et DuckDuckGo.</p>
+
+  <footer>Code source : <a href="https://github.com/AdMan-x/seo-bookmarklets">github.com/AdMan-x/seo-bookmarklets</a></footer>
+</main>
+</body>
+</html>
